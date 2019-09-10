@@ -1,0 +1,130 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  This serverless app sets up an AWS CodeBuild Project as a CI solution for a GitHub-based AWS SAM project. Once setup, everytime you
+  push to a branch in your GitHub repository, CodeBuild will kick off a build verifying your latest changes.
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: aws-sam-codebuild-ci
+    Description: >-
+      This serverless app sets up an AWS CodeBuild Project as a CI solution for a GitHub-based AWS SAM project. Once setup, everytime you
+      push to a branch in your GitHub repository, CodeBuild will kick off a build verifying your latest changes.
+    Author: AWS Serverless Application Repository
+    SpdxLicenseId: MIT-0
+    LicenseUrl: LICENSE
+    ReadmeUrl: README.md
+    Labels: [github, ci, codebuild, continuous-integration, sam]
+    HomePageUrl: https://github.com/awslabs/aws-sam-codebuild-ci
+    SemanticVersion: 0.0.1
+    SourceCodeUrl: https://github.com/awslabs/aws-sam-codebuild-ci/tree/0.0.1
+
+Outputs:
+  ArtifactsBucketArn:
+    Value: !GetAtt Artifacts.Arn
+  ArtifactsBucketName:
+    Value: !Ref Artifacts
+  CodeBuildProjectArn:
+    Value: !GetAtt CodeBuildProject.Arn
+  CodeBuildProjectName:
+    Value: !Ref CodeBuildProject
+Parameters:
+  ComputeType:
+    AllowedValues:
+      - BUILD_GENERAL1_SMALL
+      - BUILD_GENERAL1_MEDIUM
+      - BUILD_GENERAL1_LARGE
+    Default: BUILD_GENERAL1_SMALL
+    Description: AWS CodeBuild project compute type.
+    Type: String
+  EnvironmentType:
+    AllowedValues:
+      - LINUX_CONTAINER
+      - WINDOWS_CONTAINER
+    Default: LINUX_CONTAINER
+    Description: Environment type used by AWS CodeBuild. See the documentation for details (https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html#create-project-cli).
+    Type: String
+  GitHubOAuthToken:
+    Description: OAuth token used by AWS CodeBuild to connect to GitHub
+    NoEcho: true
+    Type: String
+  GitHubOwner:
+    Description: GitHub username owning the repo
+    Type: String
+  GitHubRepo:
+    Description: GitHub repo name
+    Type: String
+
+Resources:
+  Artifacts:
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 30
+            Status: Enabled
+    Type: AWS::S3::Bucket
+
+  CodeBuildProject:
+    Properties:
+      Artifacts:
+        Type: NO_ARTIFACTS
+      BadgeEnabled: true
+      Environment:
+        ComputeType: !Ref ComputeType
+        EnvironmentVariables:
+          - Name: PACKAGE_BUCKET
+            Value: !Ref Artifacts
+        Image: 'aws/codebuild/standard:2.0'
+        Type: !Ref EnvironmentType
+      ServiceRole: !GetAtt CodeBuildProjectRole.Arn
+      Source:
+        Auth:
+          Resource: !Ref GitHubOAuthToken
+          Type: OAUTH
+        GitCloneDepth: 1
+        Location: !Sub https://github.com/${GitHubOwner}/${GitHubRepo}.git
+        ReportBuildStatus: true
+        Type: GITHUB
+      Triggers:
+        Webhook: true
+    Type: AWS::CodeBuild::Project
+  CodeBuildProjectRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+        Version: '2012-10-17'
+      Path: /service-role/
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+              - Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:ListBucket
+                Effect: Allow
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::${Artifacts}
+                  - !Sub arn:${AWS::Partition}:s3:::${Artifacts}/*
+              - Action:
+                  - serverlessrepo:GetApplication
+                  - serverlessrepo:CreateCloudFormationTemplate
+                  - serverlessrepo:GetCloudFormationTemplate
+                Effect: Allow
+                Resource: '*'
+            Version: '2012-10-17'
+          PolicyName: CICodeBuildRolePolicy
+    Type: AWS::IAM::Role
