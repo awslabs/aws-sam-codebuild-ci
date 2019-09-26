@@ -1,8 +1,8 @@
-# aws-sam-codebuild-ci
+# AWS SAM CodeBuild CI
 
-This serverless app sets up an AWS CodeBuild Project as a CI solution for a GitHub-based SAM project. Once setup, everytime you push to a branch in your GitHub repository, CodeBuild will kick off a build verifying your latest changes. This can be used as an automated check on PRs to your GitHub repo.
+This serverless app sets up an AWS CodeBuild Project as a CI solution for a GitHub-based SAM project. Once setup, every time you push to a branch in your GitHub repository, CodeBuild will kick off a build verifying your latest changes. This can be used as an automated check on pull requests (PRs) to your GitHub repo.
 
-## Installation Steps
+## Installation
 
 1. [Create an AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html) if you do not already have one and login
 1. Create a GitHub OAuth token (see instructions below).
@@ -30,15 +30,15 @@ Connecting AWS CodeBuild for your account to your GitHub account is a manual ste
 
 **Note:** If you do not see the "Connect to GitHub" button in step 6 and instead see options to select one of your GitHub repositories, AWS CodeBuild is already connected to your GitHub account and no further action is necessary.
 
-## App Parameters
+## Parameters
 
 The app has the following parameters:
 
 1. `GitHubOwner` (required) - GitHub username owning the repo.
 1. `GitHubRepo` (required) - GitHub repo name (just the name, not the full URL).
 1. `GitHubOAuthToken` (required) - OAuth token used by AWS CodeBuild to connect to GitHub.
-1. `ComputeType` (optional) - AWS CodeBuild project compute type to use. See [the documentation] (https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html#create-project-cli) for details. Default: BUILD_GENERAL1_SMALL
-1. `EnvironmentType` (optional) - Environment type used by AWS CodeBuild. See [the documentation] (https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html#create-project-cli) for details. Default: LINUX_CONTAINER
+1. `ComputeType` (optional) - AWS CodeBuild project compute type to use. See [Create a Build Project (AWS CLI)] (https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html#create-project-cli) for details. Default: BUILD_GENERAL1_SMALL
+1. `EnvironmentType` (optional) - Environment type used by AWS CodeBuild. See [Create a Build Project (AWS CLI)] (https://docs.aws.amazon.com/codebuild/latest/userguide/create-project.html#create-project-cli) for details. Default: LINUX_CONTAINER
 
 ## App Outputs
 
