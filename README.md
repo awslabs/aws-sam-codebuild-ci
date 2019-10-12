@@ -1,6 +1,6 @@
 # AWS SAM CodeBuild CI
 
-This serverless app sets up an AWS CodeBuild Project as a CI solution for a GitHub-based SAM project. Once setup, every time you push to a branch in your GitHub repository, CodeBuild will kick off a build verifying your latest changes. This can be used as an automated check on pull requests (PRs) to your GitHub repo.
+This serverless app sets up an AWS CodeBuild Project as a CI solution for a GitHub-based SAM project. Once setup, every time you push to a branch in your GitHub repository, CodeBuild will kick off a build verifying your latest changes. This can be used as an automated check on pull requests (PRs) to your GitHub repo. This app also uses [github-codebuild-logs](https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:277187709615:applications~github-codebuild-logs) app to allow anyone to view the build logs from AWS CodeBuild Project in pull requests.
 
 ## Installation
 

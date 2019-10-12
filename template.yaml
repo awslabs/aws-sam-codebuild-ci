@@ -16,8 +16,8 @@ Metadata:
     ReadmeUrl: README.md
     Labels: [github, ci, codebuild, continuous-integration, sam]
     HomePageUrl: https://github.com/awslabs/aws-sam-codebuild-ci
-    SemanticVersion: 0.0.1
-    SourceCodeUrl: https://github.com/awslabs/aws-sam-codebuild-ci/tree/0.0.1
+    SemanticVersion: 1.0.0
+    SourceCodeUrl: https://github.com/awslabs/aws-sam-codebuild-ci/tree/1.0.0
 
 Outputs:
   ArtifactsBucketArn:
@@ -128,3 +128,12 @@ Resources:
             Version: '2012-10-17'
           PolicyName: CICodeBuildRolePolicy
     Type: AWS::IAM::Role
+  # This app allows anyone to see the build logs from AWS CodeBuild in a PR
+  PRBuildLogs:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location:
+        ApplicationId: arn:aws:serverlessrepo:us-east-1:277187709615:applications/github-codebuild-logs
+        SemanticVersion: 1.1.0
+      Parameters:
+        CodeBuildProjectName: !Ref CodeBuildProject
