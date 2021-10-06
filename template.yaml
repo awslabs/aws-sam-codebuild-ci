@@ -16,8 +16,8 @@ Metadata:
     ReadmeUrl: README.md
     Labels: [github, ci, codebuild, continuous-integration, sam]
     HomePageUrl: https://github.com/awslabs/aws-sam-codebuild-ci
-    SemanticVersion: 1.0.0
-    SourceCodeUrl: https://github.com/awslabs/aws-sam-codebuild-ci/tree/1.0.0
+    SemanticVersion: 1.0.1
+    SourceCodeUrl: https://github.com/awslabs/aws-sam-codebuild-ci/tree/1.0.1
 
 Outputs:
   ArtifactsBucketArn:
